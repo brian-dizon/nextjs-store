@@ -7,23 +7,16 @@ datasource db {
   provider = "postgresql"
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  authorId  Int?
-  User      User?   @relation(fields: [authorId], references: [id])
+model Product {
+  id  String  @id @default(uuid())
+  name  String
+  company String
+  description String
+  featured Boolean
+  image String
+  price Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clerkId String
 }
-
-model TestProfile {
-  id   String @id
-  name String
-}
-
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  Post  Post[]
-}
+ 
