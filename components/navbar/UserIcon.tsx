@@ -4,8 +4,6 @@ import { currentUser } from "@clerk/nextjs/server";
 async function UserIcon() {
   const user = await currentUser();
 
-  console.log(`clerk user: ${JSON.stringify(user)}`);
-
   const profileImage = user?.imageUrl;
 
   if (profileImage) {
