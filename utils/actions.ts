@@ -516,6 +516,66 @@ export const updateCartItemAction = async ({ cartItemId, amount }: { cartItemId:
   }
 };
 
+// Order actions
 export const createOrderAction = async (prevState: any, formData: FormData) => {
-  return { message: "from createOrderAction action" };
+  const user = await getAuthUser();
+  let orderId: null | string = null;
+  let cartId: null | string = null;
+
+  try {
+    const cart = await fetchOrCreateCart({
+      userId: user.id,
+      errorOnFailure: true,
+    });
+    cartId = cart.id;
+    await prisma.order.deleteMany({
+      where: {
+        clerkId: user.id,
+        isPaid: false,
+      },
+    });
+
+    const order = await prisma.order.create({
+      data: {
+        clerkId: user.id,
+        products: cart.numItemsInCart,
+        orderTotal: cart.orderTotal,
+        tax: cart.tax,
+        shipping: cart.shipping,
+        email: user.emailAddresses[0].emailAddress,
+      },
+    });
+    orderId = order.id;
+  } catch (error) {
+    return renderError(error);
+  }
+  redirect(`/checkout?orderId=${orderId}&cartId=${cartId}`);
+};
+
+export const fetchUserOrders = async () => {
+  const user = await getAuthUser();
+  const orders = await prisma.order.findMany({
+    where: {
+      clerkId: user.id,
+      isPaid: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return orders;
+};
+
+export const fetchAdminOrders = async () => {
+  const user = await getAdminUser();
+
+  const orders = await prisma.order.findMany({
+    where: {
+      isPaid: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return orders;
 };
