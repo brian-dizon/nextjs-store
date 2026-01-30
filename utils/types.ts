@@ -1,5 +1,17 @@
 export type actionFunction = (prevState: any, formData: FormData) => Promise<{ message: string }>;
 
+import { Product } from "@/lib/generated/prisma/client";
+
+export type CartItemWithProduct = {
+  id: string;
+  productId: string;
+  cartId: string;
+  amount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  product: Product;
+};
+
 export type CartItem = {
   productId: string;
   image: string;
